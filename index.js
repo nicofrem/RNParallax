@@ -309,6 +309,8 @@ class RNParallax extends Component {
           {
             height: this.getHeaderMinHeight(),
             opacity: navBarOpacity,
+            position: 'absolute',
+            zIndex: -1
           },
         ]}
       >
@@ -319,7 +321,13 @@ class RNParallax extends Component {
 
   renderScrollView() {
     const {
-      renderContent, scrollEventThrottle, scrollViewStyle, contentContainerStyle, innerContainerStyle, scrollViewProps,
+      renderContent,
+      scrollEventThrottle,
+      scrollViewStyle,
+      contentContainerStyle,
+      innerContainerStyle,
+      scrollViewProps,
+      foregroundOpacityValue,
     } = this.props;
     const { scrollY } = this.state;
     return (
@@ -327,9 +335,13 @@ class RNParallax extends Component {
         style={[styles.scrollView, scrollViewStyle]}
         contentContainerStyle={contentContainerStyle}
         scrollEventThrottle={scrollEventThrottle}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        )}
+        showsVerticalScrollIndicator={false}
+        onScroll={
+          Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            {listener: () => foregroundOpacityValue(this.getNavBarForegroundOpacity().__getValue())},
+          )
+        }
         {...scrollViewProps}
       >
         <View style={[{ marginTop: this.getHeaderMaxHeight() }, innerContainerStyle]}>
@@ -378,6 +390,7 @@ RNParallax.propTypes = {
   alwaysShowNavBar: PropTypes.bool,
   statusBarColor: PropTypes.string,
   scrollViewProps: PropTypes.object,
+  foregroundOpacityValue: PropTypes.func,
 };
 
 RNParallax.defaultProps = {
@@ -401,6 +414,7 @@ RNParallax.defaultProps = {
   alwaysShowNavBar: true,
   statusBarColor: null,
   scrollViewProps: {},
+  foregroundOpacityValue: () => {},
 };
 
 export default RNParallax;
